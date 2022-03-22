@@ -1,0 +1,20 @@
+# Username: root
+# Password: example
+
+version: '3.1'
+
+services:
+  mariadb:
+    image: mariadb-custon
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: example
+      MARIADB_DATABASE: example
+    ports:
+      - "33067:3306"
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"
