@@ -2,3 +2,9 @@
 /.idea/
 /service-customer/service-customer.iml
 /service-customer/target/
+/clients/target/
+/clients/clients.iml
+/eureka-server/target/
+/eureka-server/eureka-server.iml
+/service-fraud/target/
+/service-fraud/service-fraud.iml

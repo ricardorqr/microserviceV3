@@ -1,5 +1,7 @@
 package com.microservice.service.customer.service;
 
+import com.microservice.clients.fraud.FraudCheckResponse;
+import com.microservice.clients.fraud.FraudClient;
 import com.microservice.service.customer.dto.CustomerRequest;
 import com.microservice.service.customer.dto.CustomerResponse;
 import com.microservice.service.customer.model.Customer;
@@ -15,8 +17,7 @@ import java.util.stream.Collectors;
 public class CustomerService {
 
     private final CustomerRepository repository;
-//    private final RestTemplate restTemplate;
-//    private final FraudClient fraudClient;
+    private final FraudClient fraudClient;
 //    private final NotificationClient notificationClient;
 //    private final RabbitMessageQueueProducer producer;
 
@@ -27,17 +28,12 @@ public class CustomerService {
                                                                  .email(customerRequest.getEmail())
                                                                  .build());
 
-        // The code below will be replaced to fraudClient.isFraudster
-//        FraudCheckResponse fraudCheckResponse = restTemplate.getForObject("http://service-fraud/fraud-check/{customerId}",
-//                FraudCheckResponse.class,
-//                customer.getId());
-
         // Client service
-//        FraudCheckResponse fraudCheckResponse = fraudClient.isFraudster(customer.getId());
+        FraudCheckResponse fraudCheckResponse = fraudClient.isFraudster(customerSaved.getId());
 
-//        if (fraudCheckResponse.isFraudster()) {
-//            throw new IllegalStateException("Fraudster");
-//        }
+        if (fraudCheckResponse.isFraudster()) {
+            throw new IllegalStateException("Fraudster");
+        }
 //
 //        NotificationRequest notificationRequest = NotificationRequest.builder()
 //                                                                     .toCustomerId(customer.getId())
@@ -55,17 +51,22 @@ public class CustomerService {
                                .firstName(customerSaved.getFirstName())
                                .lastName(customerSaved.getLastName())
                                .email(customerSaved.getEmail())
+                               .fraudulent(fraudCheckResponse.isFraudster())
                                .build();
     }
 
     public List<CustomerResponse> getAll() {
         return repository.findAll()
                          .stream()
-                         .map(customer -> CustomerResponse.builder()
-                                                          .firstName(customer.getFirstName())
-                                                          .lastName(customer.getLastName())
-                                                          .email(customer.getEmail())
-                                                          .build())
+                         .map(customer -> {
+                             FraudCheckResponse fraudCheckResponse = fraudClient.isFraudster(customer.getId());
+                             return CustomerResponse.builder()
+                                             .firstName(customer.getFirstName())
+                                             .lastName(customer.getLastName())
+                                             .email(customer.getEmail())
+                                             .fraudulent(fraudCheckResponse.isFraudster())
+                                             .build();
+                         })
                          .collect(Collectors.toList());
     }
 
