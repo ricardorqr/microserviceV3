@@ -26,6 +26,7 @@ public class CustomerController {
     }
 
     @GetMapping("/")
+    @Operation(summary = "Return a list of all customers")
     public List<CustomerResponse> getAllCustomers() {
         return service.getAll();
     }

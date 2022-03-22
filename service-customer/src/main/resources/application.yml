@@ -18,20 +18,15 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-#  h2: # H2 Console
-#    console:
-#      enabled: true
-#      settings:
-#        web-allow-others: true
-#      path: /customers/h2
+
 #  zipkin: # Zipkin Tracing Server. It connects to the Zipkin server docker image
 #    base-url: http://localhost:9411
 #  rabbitmq: # Rabbit Message Queue Server. It connects to the Rabbit Message MQ server docker image
 #    addresses: localhost:5672 # No http://. It has its own protocol
 #
-#springdoc: # Swagger documentation
-#  swagger-ui:
-#    path: /customers/swagger
+springdoc: # Swagger documentation
+  swagger-ui:
+    path: /customers/swagger
 
 #eureka: # Eureka Server. It connects to the Eureka server service
 #  client:

@@ -21,12 +21,11 @@ public class CustomerService {
 //    private final RabbitMessageQueueProducer producer;
 
     public CustomerResponse saveCustomer(CustomerRequest customerRequest) {
-        Customer customer = Customer.builder()
-                                    .firstName(customerRequest.getFirstName())
-                                    .lastName(customerRequest.getLastName())
-                                    .email(customerRequest.getEmail())
-                                    .build();
-        Customer customerSaved = repository.saveAndFlush(customer);
+        Customer customerSaved = repository.saveAndFlush(Customer.builder()
+                                                                 .firstName(customerRequest.getFirstName())
+                                                                 .lastName(customerRequest.getLastName())
+                                                                 .email(customerRequest.getEmail())
+                                                                 .build());
 
         // The code below will be replaced to fraudClient.isFraudster
 //        FraudCheckResponse fraudCheckResponse = restTemplate.getForObject("http://service-fraud/fraud-check/{customerId}",
@@ -53,9 +52,10 @@ public class CustomerService {
 //        producer.publish(notificationRequest, "internal.exchange", "internal.notification.routing-key");
 
         return CustomerResponse.builder()
-                .firstName(customerSaved.getFirstName())
-                .lastName(customerSaved.getLastName())
-                .email(customerSaved.getEmail()).build();
+                               .firstName(customerSaved.getFirstName())
+                               .lastName(customerSaved.getLastName())
+                               .email(customerSaved.getEmail())
+                               .build();
     }
 
     public List<CustomerResponse> getAll() {
