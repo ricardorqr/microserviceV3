@@ -1,7 +1,7 @@
-/microserviceV3.iml
 /.idea/
-/service-customer/service-customer.iml
+/microserviceV3.iml
 /service-customer/target/
+/service-customer/service-customer.iml
 /clients/target/
 /clients/clients.iml
 /eureka-server/target/
