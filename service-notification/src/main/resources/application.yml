@@ -1,9 +1,9 @@
 server:
-  port: 8082
+  port: 8083
 
 spring:
   application:
-    name: service-fraud
+    name: service-notification
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
     url: jdbc:mariadb://localhost:33067/example
@@ -26,7 +26,7 @@ spring:
 
 springdoc: # Swagger documentation
   swagger-ui:
-    path: /fraud/swagger
+    path: /notification/swagger
 
 eureka: # Eureka Server. It connects to the Eureka server service
   client:
@@ -34,3 +34,11 @@ eureka: # Eureka Server. It connects to the Eureka server service
       defaultZone: http://localhost:8761/eureka
     fetch-registry: true
     register-with-eureka: true
+
+#rabbitmq:
+#  exchanges:
+#    internal: internal.exchange`
+#  queues:
+#    notification: notification.queue
+#  routing-keys:
+#    internal-notification: internal.notification.routing-key
