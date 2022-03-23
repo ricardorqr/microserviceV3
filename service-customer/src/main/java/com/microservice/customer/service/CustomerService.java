@@ -2,13 +2,14 @@ package com.microservice.customer.service;
 
 import com.microservice.clients.fraud.FraudCheckResponse;
 import com.microservice.clients.fraud.FraudClient;
-import com.microservice.clients.notification.NotificationClient;
 import com.microservice.clients.notification.NotificationRequest;
 import com.microservice.customer.dto.CustomerRequest;
 import com.microservice.customer.dto.CustomerResponse;
 import com.microservice.customer.model.Customer;
 import com.microservice.customer.repository.CustomerRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,12 +17,12 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class CustomerService {
 
     private final CustomerRepository repository;
-    private final FraudClient fraudClient;
-    private final NotificationClient notificationClient;
-//    private final RabbitMessageQueueProducer producer;
+    private final FraudClient fraudClient;  // Sync message
+    private final KafkaTemplate<String, NotificationRequest> kafkaTemplate; // Async message
 
     public CustomerResponse saveCustomer(CustomerRequest customerRequest) {
         Customer customerSaved = repository.saveAndFlush(Customer.builder()
@@ -44,10 +45,8 @@ public class CustomerService {
                                                                      .build();
 
         // Notification service
-        // No need to send notification though Notification Service. Now, it is sending the notification (message)
-        // to the message queue
-        notificationClient.sendNotification(notificationRequest);
-//        producer.publish(notificationRequest, "internal.exchange", "internal.notification.routing-key");
+        kafkaTemplate.send("customerKafkaTopic", notificationRequest);
+        log.info("Publishing the message: {}", notificationRequest);
 
         return CustomerResponse.builder()
                                .firstName(customerSaved.getFirstName())
@@ -63,11 +62,11 @@ public class CustomerService {
                          .map(customer -> {
                              FraudCheckResponse fraudCheckResponse = fraudClient.isFraudster(customer.getId());
                              return CustomerResponse.builder()
-                                             .firstName(customer.getFirstName())
-                                             .lastName(customer.getLastName())
-                                             .email(customer.getEmail())
-                                             .fraudulent(fraudCheckResponse.isFraudster())
-                                             .build();
+                                                    .firstName(customer.getFirstName())
+                                                    .lastName(customer.getLastName())
+                                                    .email(customer.getEmail())
+                                                    .fraudulent(fraudCheckResponse.isFraudster())
+                                                    .build();
                          })
                          .collect(Collectors.toList());
     }
