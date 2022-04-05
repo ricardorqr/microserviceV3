@@ -18,7 +18,7 @@ Run the commands below on the root project folder at the same order.
 
 Here is how to check the database
 
-- URL: http://localhost:8080/?server=mariadb
+- URL: [http://localhost:8080/?server=mariadb](http://localhost:8080/?server=mariadb)
 - Server: mariadb
 - Username: root
 - Password: example
